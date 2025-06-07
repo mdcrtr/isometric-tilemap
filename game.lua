@@ -1,3 +1,6 @@
+-- Debugging requires the Local Debugger VSCode extension
+if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
+
 ---@class Vec
 ---@field x number
 ---@field y number
@@ -300,7 +303,7 @@ end
 function game.load()
   game.transform:translate(500, 200)
   game.transform:scale(4)
-  game.texture = love.graphics.newImage("iso-tiles2.png")
+  game.texture = love.graphics.newImage("assets/iso-tiles2.png")
   game.texture:setFilter("nearest", "nearest")
   for _ = 1, game.MAP_SZ * game.MAP_SZ do
     table.insert(game.tileMap, game.newTile("grass"))

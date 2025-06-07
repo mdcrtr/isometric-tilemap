@@ -1,5 +1,21 @@
 {
   "Lua.workspace.library": [
     "${3rd}/love2d/library"
-  ]
+  ],
+  "launch": {
+    "configurations": [
+      {
+        "type": "lua-local",
+        "request": "launch",
+        "name": "Debug LOVE",
+        "program": {
+          "command": "love"
+        },
+        "args": [
+          "${workspaceFolder}",
+          "vsc_debug"
+        ]
+      },
+    ]
+  },
 }
