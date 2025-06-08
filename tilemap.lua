@@ -38,11 +38,12 @@ local function toHeightMapIndex(x, y)
 end
 
 ---@param texName string
+---@param height number
 ---@return Tile
-local function newTile(texName)
+local function newTile(texName, height)
   return {
     texInfo = resource.atlas[texName],
-    hy = 0
+    hy = height * TILE_HH
   }
 end
 
@@ -75,6 +76,16 @@ end
 ---@return number
 function M.getMinHeight(x, y)
   return math.min(
+    M.getHeight(x, y), M.getHeight(x + 1, y),
+    M.getHeight(x + 1, y + 1), M.getHeight(x, y + 1)
+  )
+end
+
+---@param x number
+---@param y number
+---@return number
+function M.getMaxHeight(x, y)
+  return math.max(
     M.getHeight(x, y), M.getHeight(x + 1, y),
     M.getHeight(x + 1, y + 1), M.getHeight(x, y + 1)
   )
@@ -190,7 +201,11 @@ local function updateTileQuad(x, y)
   local tile = M.getTile(x, y)
   local h = M.getMinHeight(x, y)
   tile.hy = h * 8
-  tile.texInfo = resource.patternToTexInfo(pattern)
+  if h == 0 and M.getMaxHeight(x, y) == 0 then
+    tile.texInfo = resource.atlas["water"]
+  else
+    tile.texInfo = resource.patternToTexInfo(pattern)
+  end
 end
 
 ---@param x number
@@ -215,10 +230,10 @@ function M.init()
   tiles = {}
   heightMap = {}
   for _ = 1, MAP_SZ * MAP_SZ do
-    table.insert(tiles, newTile("grass"))
+    table.insert(tiles, newTile("grass", 1))
   end
   for _ = 1, HMAP_SZ * HMAP_SZ do
-    table.insert(heightMap, 0)
+    table.insert(heightMap, 1)
   end
 end
 

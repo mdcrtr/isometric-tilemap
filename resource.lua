@@ -18,6 +18,7 @@ local M = {}
 ---@type TexInfo[]
 M.atlas = {
   grass = newTexInfo("grass", 32, 0, 32, 16),
+  water = newTexInfo("water", 96, 0, 32, 16),
   slopeSW = newTexInfo("slopeSW", 0, 16, 32, 32),
   slopeS = newTexInfo("slopeS", 32, 16, 32, 32),
   slopeSE = newTexInfo("slopeSE", 64, 16, 32, 32),
