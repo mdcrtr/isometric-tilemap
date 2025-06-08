@@ -1,3 +1,6 @@
+-- Debugging requires the Local Debugger VSCode extension
+if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
+
 local game = require "game"
 
 local function hotReload()
@@ -11,8 +14,8 @@ function love.load()
   game.load()
 end
 
-function love.update()
-  game.update()
+function love.update(dt)
+  game.update(dt)
 end
 
 function love.draw()

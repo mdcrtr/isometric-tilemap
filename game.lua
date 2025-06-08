@@ -1,6 +1,3 @@
--- Debugging requires the Local Debugger VSCode extension
-if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
-
 ---@class Vec
 ---@field x number
 ---@field y number
@@ -25,6 +22,8 @@ game.TILE_HH = game.TILE_H / 2
 game.texture = nil
 game.transform = love.math.newTransform()
 game.dbgText = ""
+game.toolCooldown = 0
+game.tool = "raiseLower"
 
 ---@type Tile[]
 game.tileMap = {}
@@ -300,6 +299,20 @@ function game.raiseLowerTerrain(x, y, dh)
   game.updateTileQuad(x, y - 1)
 end
 
+---@param x number
+---@param y number
+---@param h number
+function game.setTerrainHeight(x, y, h)
+  if not game.validHeightMapCoord(x, y) then return end
+  local i = game.toHeightMapIndex(x, y)
+  game.heightMap[i] = h
+  game.smoothTerrain(x, y)
+  game.updateTileQuad(x, y)
+  game.updateTileQuad(x - 1, y)
+  game.updateTileQuad(x - 1, y - 1)
+  game.updateTileQuad(x, y - 1)
+end
+
 function game.load()
   game.transform:translate(500, 200)
   game.transform:scale(4)
@@ -313,7 +326,11 @@ function game.load()
   end
 end
 
-function game.update()
+function game.update(dt)
+  if game.toolCooldown > 0 then
+    game.toolCooldown = game.toolCooldown - dt
+  end
+
   if love.keyboard.isDown("a") then
     game.transform:translate(4, 0)
   end
@@ -328,6 +345,24 @@ function game.update()
   end
 
   game.mousePos.x, game.mousePos.y = game.screenToWorld(love.mouse.getPosition())
+  local gridX, gridY = game.snapToGridPoint(game.mousePos.x, game.mousePos.y)
+
+  if game.toolCooldown <= 0 and game.validHeightMapCoord(gridX, gridY) then
+    if game.tool == "raiseLower" then
+      if love.mouse.isDown(1) then
+        game.raiseLowerTerrain(gridX, gridY, 1)
+        game.toolCooldown = 0.2
+      elseif love.mouse.isDown(2) then
+        game.raiseLowerTerrain(gridX, gridY, -1)
+        game.toolCooldown = 0.2
+      end
+    elseif game.tool == "level" then
+      if love.mouse.isDown(1) then
+        game.setTerrainHeight(gridX, gridY, 1)
+        game.toolCooldown = 0.2
+      end
+    end
+  end
 end
 
 function game.draw()
@@ -346,10 +381,6 @@ function game.draw()
     end
   end
 
-  love.graphics.setColor(1, 0, 0.5)
-  love.graphics.line(0, -1000, 0, 1000)
-  love.graphics.line(-1000, 0, 1000, 0)
-  love.graphics.setColor(1, 1, 1)
   local gridX, gridY = game.snapToGridPoint(game.mousePos.x, game.mousePos.y)
   local height = game.getHeight(gridX, gridY)
   local wx, wy = game.gridToWorld(gridX, gridY)
@@ -358,6 +389,7 @@ function game.draw()
   love.graphics.circle("fill", wx, wy, 2)
   love.graphics.origin()
   love.graphics.print(game.dbgText, 10, 10)
+  love.graphics.print(game.tool, 200, 10)
 end
 
 function game.keypressed(key)
@@ -365,19 +397,14 @@ function game.keypressed(key)
     game.transform:scale(0.5)
   elseif key == "e" then
     game.transform:scale(2)
+  elseif key == "k" then
+    game.tool = "raiseLower"
+  elseif key == "l" then
+    game.tool = "level"
   end
 end
 
 function game.mousepressed(x, y, button)
-  game.mousePos.x, game.mousePos.y = game.screenToWorld(x, y)
-  local gridX, gridY = game.snapToGridPoint(game.mousePos.x, game.mousePos.y)
-  if game.validHeightMapCoord(gridX, gridY) then
-    if button == 1 then
-      game.raiseLowerTerrain(gridX, gridY, 1)
-    else
-      game.raiseLowerTerrain(gridX, gridY, -1)
-    end
-  end
 end
 
 return game
