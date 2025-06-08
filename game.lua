@@ -1,13 +1,9 @@
-local resource = require "resource"
 local tileMap = require "tilemap"
+local tool = require "tool"
 
 local game = {}
 
 game.transform = love.math.newTransform()
-game.dbgText = ""
-game.toolCooldown = 0
-game.tool = "raiseLower"
-game.mousePos = { x = 0, y = 0 } ---@type Vec
 
 ---@param x number
 ---@param y number
@@ -23,10 +19,6 @@ function game.load()
 end
 
 function game.update(dt)
-  if game.toolCooldown > 0 then
-    game.toolCooldown = game.toolCooldown - dt
-  end
-
   if love.keyboard.isDown("a") then
     game.transform:translate(4, 0)
   end
@@ -40,41 +32,18 @@ function game.update(dt)
     game.transform:translate(0, -4)
   end
 
-  game.mousePos.x, game.mousePos.y = game.screenToWorld(love.mouse.getPosition())
-  local gridX, gridY = tileMap.snapToGridPoint(game.mousePos.x, game.mousePos.y)
-
-  if game.toolCooldown <= 0 and tileMap.validHeightMapCoord(gridX, gridY) then
-    if game.tool == "raiseLower" then
-      if love.mouse.isDown(1) then
-        tileMap.raiseTerrain(gridX, gridY)
-        game.toolCooldown = 0.2
-      elseif love.mouse.isDown(2) then
-        tileMap.lowerTerrain(gridX, gridY)
-        game.toolCooldown = 0.2
-      end
-    elseif game.tool == "level" then
-      if love.mouse.isDown(1) then
-        tileMap.setTerrainHeight(gridX, gridY, 1)
-        game.toolCooldown = 0.2
-      end
-    end
-  end
+  tool.update(dt)
 end
 
 function game.draw()
   love.graphics.setColor(1, 1, 1)
   love.graphics.applyTransform(game.transform)
-  tileMap.draw()
 
-  local gridX, gridY = tileMap.snapToGridPoint(game.mousePos.x, game.mousePos.y)
-  local height = tileMap.getHeight(gridX, gridY)
-  local wx, wy = tileMap.gridToWorld(gridX, gridY)
-  wy = wy - height * 8
-  love.graphics.setColor(1, 1, 0)
-  love.graphics.circle("fill", wx, wy, 2)
+  tileMap.draw()
+  tool.draw()
+
   love.graphics.origin()
-  love.graphics.print(game.dbgText, 10, 10)
-  love.graphics.print(game.tool, 200, 10)
+  love.graphics.print(tool.getName(), 10, 10)
 end
 
 function game.keypressed(key)
@@ -82,14 +51,32 @@ function game.keypressed(key)
     game.transform:scale(0.5)
   elseif key == "e" then
     game.transform:scale(2)
+  elseif key == "j" then
+    tool.select("lower")
   elseif key == "k" then
-    game.tool = "raiseLower"
+    tool.select("raise")
   elseif key == "l" then
-    game.tool = "level"
+    tool.select("level")
   end
 end
 
 function game.mousepressed(x, y, button)
+  if button == 1 then
+    local worldX, worldY = game.screenToWorld(x, y)
+    tool.mousepressed(worldX, worldY)
+  end
+end
+
+function game.mousereleased(x, y, button)
+  if button == 1 then
+    local worldX, worldY = game.screenToWorld(x, y)
+    tool.mousereleased(worldX, worldY)
+  end
+end
+
+function game.mousemoved(x, y)
+  local worldX, worldY = game.screenToWorld(x, y)
+  tool.mousemoved(worldX, worldY)
 end
 
 return game

@@ -38,3 +38,11 @@ end
 function love.mousepressed(x, y, button)
   game.mousepressed(x, y, button)
 end
+
+function love.mousereleased(x, y, button)
+  game.mousereleased(x, y, button)
+end
+
+function love.mousemoved(x, y, dx, dy)
+  game.mousemoved(x, y)
+end

@@ -1,18 +1,18 @@
 local resource = require "resource"
 
-local M = {}
 
-M.MAP_SZ = 32
-M.HMAP_SZ = M.MAP_SZ + 1
-M.TILE_W = 32
-M.TILE_H = 16
-M.TILE_HW = M.TILE_W / 2
-M.TILE_HH = M.TILE_H / 2
-M.tiles = {} ---@type Tile[]
-M.heightMap = {} ---@type number[]
+local MAP_SZ = 32
+local HMAP_SZ = MAP_SZ + 1
+local TILE_W = 32
+local TILE_H = 16
+local TILE_HW = TILE_W / 2
+local TILE_HH = TILE_H / 2
+
+local tiles = {} ---@type Tile[]
+local heightMap = {} ---@type number[]
 
 ---@type Vec[]
-M.adjacentPositions = {
+local adjacentPositions = {
   { x = -1, y = -1 },
   { x = 0,  y = -1 },
   { x = 1,  y = -1 },
@@ -23,41 +23,43 @@ M.adjacentPositions = {
   { x = 1,  y = 1 },
 }
 
+---@param x number
+---@param y number
+---@return number
+local function toTileMapIndex(x, y)
+  return y * MAP_SZ + x + 1
+end
+
+---@param x number
+---@param y number
+---@return number
+local function toHeightMapIndex(x, y)
+  return y * HMAP_SZ + x + 1
+end
+
 ---@param texName string
 ---@return Tile
-function M.newTile(texName)
+local function newTile(texName)
   return {
     texInfo = resource.atlas[texName],
     hy = 0
   }
 end
 
----@param x number
----@param y number
----@return number
-function M.toTileMapIndex(x, y)
-  return y * M.MAP_SZ + x + 1
-end
-
----@param x number
----@param y number
----@return number
-function M.toHeightMapIndex(x, y)
-  return y * M.HMAP_SZ + x + 1
-end
+local M = {}
 
 ---@param x number
 ---@param y number
 ---@return boolean
 function M.validTileCoord(x, y)
-  return x >= 0 and y >= 0 and x < M.MAP_SZ and y < M.MAP_SZ
+  return x >= 0 and y >= 0 and x < MAP_SZ and y < MAP_SZ
 end
 
 ---@param x number
 ---@param y number
 ---@return boolean
 function M.validHeightMapCoord(x, y)
-  return x >= 0 and y >= 0 and x < M.HMAP_SZ and y < M.HMAP_SZ
+  return x >= 0 and y >= 0 and x < HMAP_SZ and y < HMAP_SZ
 end
 
 ---@param x number
@@ -65,7 +67,7 @@ end
 ---@return number
 function M.getHeight(x, y)
   if not M.validHeightMapCoord(x, y) then return 0 end
-  return M.heightMap[M.toHeightMapIndex(x, y)]
+  return heightMap[toHeightMapIndex(x, y)]
 end
 
 ---@param x number
@@ -82,8 +84,8 @@ end
 ---@param y number
 ---@return number, number
 function M.gridToWorld(x, y)
-  local px = (x - y) * M.TILE_HW
-  local py = (x + y) * M.TILE_HH
+  local px = (x - y) * TILE_HW
+  local py = (x + y) * TILE_HH
   return px, py
 end
 
@@ -91,8 +93,8 @@ end
 ---@param y number
 ---@return number, number
 function M.worldToGridFloat(x, y)
-  local gx = (x / M.TILE_HW + y / M.TILE_HH) / 2
-  local gy = (y / M.TILE_HH - x / M.TILE_HW) / 2
+  local gx = (x / TILE_HW + y / TILE_HH) / 2
+  local gy = (y / TILE_HH - x / TILE_HW) / 2
   return gx, gy
 end
 
@@ -106,9 +108,18 @@ end
 
 ---@param x number
 ---@param y number
+---@param fixedHeight number?
 ---@return number, number
-function M.snapToGridPoint(x, y)
+function M.snapToGridPoint(x, y, fixedHeight)
   local fx, fy = M.worldToGridFloat(x, y)
+
+  if fixedHeight then
+    local offset = fixedHeight * 0.5
+    local gridX = math.floor(fx + 0.5 + offset)
+    local gridY = math.floor(fy + 0.5 + offset)
+    return gridX, gridY
+  end
+
   local startX = math.floor(fx)
   local startY = math.floor(fy)
   local closestX = startX
@@ -143,13 +154,13 @@ end
 ---@return Tile | nil
 function M.getTile(x, y)
   if not M.validTileCoord(x, y) then return nil end
-  return M.tiles[M.toTileMapIndex(x, y)]
+  return tiles[toTileMapIndex(x, y)]
 end
 
 ---@param x number
 ---@param y number
 ---@return number
-function M.getHeightPattern(x, y)
+local function getHeightPattern(x, y)
   local heights = {
     M.getHeight(x, y),
     M.getHeight(x + 1, y),
@@ -173,9 +184,9 @@ end
 
 ---@param x number
 ---@param y number
-function M.updateTileQuad(x, y)
+local function updateTileQuad(x, y)
   if not M.validTileCoord(x, y) then return end
-  local pattern = M.getHeightPattern(x, y)
+  local pattern = getHeightPattern(x, y)
   local tile = M.getTile(x, y)
   local h = M.getMinHeight(x, y)
   tile.hy = h * 8
@@ -184,9 +195,9 @@ end
 
 ---@param x number
 ---@param y number
-function M.smoothTerrain(x, y)
+local function smoothTerrain(x, y)
   local h1 = M.getHeight(x, y)
-  for _, v in ipairs(M.adjacentPositions) do
+  for _, v in ipairs(adjacentPositions) do
     local nx = x + v.x
     local ny = y + v.y
     if M.validHeightMapCoord(nx, ny) then
@@ -201,27 +212,25 @@ function M.smoothTerrain(x, y)
 end
 
 function M.init()
-  M.tiles = {}
-  M.heightMap = {}
-  for _ = 1, M.MAP_SZ * M.MAP_SZ do
-    table.insert(M.tiles, M.newTile("grass"))
+  tiles = {}
+  heightMap = {}
+  for _ = 1, MAP_SZ * MAP_SZ do
+    table.insert(tiles, newTile("grass"))
   end
-  for _ = 1, M.HMAP_SZ * M.HMAP_SZ do
-    table.insert(M.heightMap, 0)
+  for _ = 1, HMAP_SZ * HMAP_SZ do
+    table.insert(heightMap, 0)
   end
 end
 
 function M.draw()
-  for y = 0, M.MAP_SZ - 1 do
-    for x = 0, M.MAP_SZ - 1 do
+  for y = 0, MAP_SZ - 1 do
+    for x = 0, MAP_SZ - 1 do
       local px, py = M.gridToWorld(x, y)
-      px = px - M.TILE_HW
-      local tile = M.getTile(x, y)
-      if tile then
-        local texInfo = tile.texInfo
-        py = py + texInfo.oy - tile.hy
-        love.graphics.draw(resource.texture, texInfo.quad, px, py)
-      end
+      px = px - TILE_HW
+      local tile = tiles[toTileMapIndex(x, y)]
+      local texInfo = tile.texInfo
+      py = py + texInfo.oy - tile.hy
+      love.graphics.draw(resource.texture, texInfo.quad, px, py)
     end
   end
 end
@@ -232,13 +241,13 @@ end
 function M.setTerrainHeight(x, y, h)
   if not M.validHeightMapCoord(x, y) then return end
   if h < 0 or h > 12 then return end
-  local i = M.toHeightMapIndex(x, y)
-  M.heightMap[i] = h
-  M.smoothTerrain(x, y)
-  M.updateTileQuad(x, y)
-  M.updateTileQuad(x - 1, y)
-  M.updateTileQuad(x - 1, y - 1)
-  M.updateTileQuad(x, y - 1)
+  local i = toHeightMapIndex(x, y)
+  heightMap[i] = h
+  smoothTerrain(x, y)
+  updateTileQuad(x, y)
+  updateTileQuad(x - 1, y)
+  updateTileQuad(x - 1, y - 1)
+  updateTileQuad(x, y - 1)
 end
 
 ---@param x number
