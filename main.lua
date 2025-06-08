@@ -2,15 +2,18 @@
 if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
 
 local game = require "game"
+local resource = require "resource"
 
 local function hotReload()
   package.loaded.game = nil
+  package.loaded.tilemap = nil
   collectgarbage("collect")
   game = require "game"
   game.load()
 end
 
 function love.load()
+  resource.init()
   game.load()
 end
 
