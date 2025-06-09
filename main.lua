@@ -1,5 +1,7 @@
--- Debugging requires the Local Debugger VSCode extension
+-- Debugging requires the Local Lua Debugger VSCode extension
 if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
+
+package.path = "./src/?.lua;" .. package.path
 
 local game = require "game"
 local resource = require "resource"
@@ -7,13 +9,15 @@ local resource = require "resource"
 local function hotReload()
   package.loaded.game = nil
   package.loaded.tilemap = nil
+  package.loaded.tool = nil
+  package.loaded.constants = nil
   collectgarbage("collect")
   game = require "game"
   game.load()
 end
 
 function love.load()
-  resource.init()
+  resource.load()
   game.load()
 end
 

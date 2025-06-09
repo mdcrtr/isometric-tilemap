@@ -5,19 +5,23 @@ local game = {}
 
 game.transform = love.math.newTransform()
 
----@param x number
----@param y number
----@return number, number
+---Converts Screen position to World position.
+---@param x number Screen X position
+---@param y number Screen Y position
+---@return number, number - World X/Y position
 function game.screenToWorld(x, y)
   return game.transform:inverseTransformPoint(x, y)
 end
 
+---Loads the game.
 function game.load()
   game.transform:translate(500, 200)
   game.transform:scale(4)
   tileMap.init()
 end
 
+---Updates the game.
+---@param dt number Delta time
 function game.update(dt)
   if love.keyboard.isDown("a") then
     game.transform:translate(4, 0)
@@ -35,6 +39,7 @@ function game.update(dt)
   tool.update(dt)
 end
 
+---Draws the game.
 function game.draw()
   love.graphics.setColor(1, 1, 1)
   love.graphics.applyTransform(game.transform)
@@ -46,6 +51,8 @@ function game.draw()
   love.graphics.print(tool.getName(), 10, 10)
 end
 
+---Handles key pressed event.
+---@param key love.KeyConstant Key
 function game.keypressed(key)
   if key == "q" then
     game.transform:scale(0.5)
@@ -60,6 +67,10 @@ function game.keypressed(key)
   end
 end
 
+---Handles mouse pressed event.
+---@param x number Mouse X screen position
+---@param y number Mouse Y screen position
+---@param button number Button index
 function game.mousepressed(x, y, button)
   if button == 1 then
     local worldX, worldY = game.screenToWorld(x, y)
@@ -67,6 +78,10 @@ function game.mousepressed(x, y, button)
   end
 end
 
+---Handles mouse released event.
+---@param x number Mouse X screen position
+---@param y number Mouse Y screen position
+---@param button number Button index
 function game.mousereleased(x, y, button)
   if button == 1 then
     local worldX, worldY = game.screenToWorld(x, y)
@@ -74,6 +89,9 @@ function game.mousereleased(x, y, button)
   end
 end
 
+---Handles mouse moved event.
+---@param x number Mouse X screen position
+---@param y number Mouse Y screen position
 function game.mousemoved(x, y)
   local worldX, worldY = game.screenToWorld(x, y)
   tool.mousemoved(worldX, worldY)

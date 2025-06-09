@@ -1,3 +1,4 @@
+---Creates a TexInfo object containing texture coordinates for a tile.
 ---@param name string
 ---@param x number
 ---@param y number
@@ -13,29 +14,9 @@ local function newTexInfo(name, x, y, w, h, oy)
   }
 end
 
-local M = {}
-
----@type TexInfo[]
-M.atlas = {
-  grass = newTexInfo("grass", 32, 0, 32, 16),
-  water = newTexInfo("water", 96, 0, 32, 16),
-  slopeSW = newTexInfo("slopeSW", 0, 16, 32, 32),
-  slopeS = newTexInfo("slopeS", 32, 16, 32, 32),
-  slopeSE = newTexInfo("slopeSE", 64, 16, 32, 32),
-  slopeE = newTexInfo("slopeE", 96, 16, 32, 32),
-  slopeNE = newTexInfo("slopeNE", 0, 48, 32, 32),
-  slopeN = newTexInfo("slopeN", 32, 48, 32, 32),
-  slopeNW = newTexInfo("slopeNW", 64, 48, 32, 32),
-  slopeW = newTexInfo("slopeW", 96, 48, 32, 32),
-  slopeNESW = newTexInfo("slopeNESW", 128, 48, 32, 32),
-  dipNW = newTexInfo("dipNW", 0, 80, 32, 16, -8),
-  dipSW = newTexInfo("dipSW", 32, 80, 32, 32, -8),
-  dipSE = newTexInfo("dipSE", 64, 80, 32, 32, -8),
-  dipNE = newTexInfo("dipNE", 96, 80, 32, 32, -8),
-}
-
+---Converts 4 bit tile height pattern to TexInfo
 ---@type string[]
-M.patternToAltasName = {
+local patternToAltasName = {
   "grass",     -- 0000
   "slopeSE",   -- 0001
   "slopeSW",   -- 0010
@@ -54,15 +35,41 @@ M.patternToAltasName = {
   "grass",     -- 1111
 }
 
-function M.init()
+local M = {}
+
+---Atlas of tile texture coordinates.
+---@type TexInfo[]
+M.atlas = {
+  empty = newTexInfo("empty", 1, 1, 0, 0),
+  grass = newTexInfo("grass", 32, 0, 32, 16),
+  water = newTexInfo("water", 96, 0, 32, 16),
+  slopeSW = newTexInfo("slopeSW", 0, 16, 32, 32),
+  slopeS = newTexInfo("slopeS", 32, 16, 32, 32),
+  slopeSE = newTexInfo("slopeSE", 64, 16, 32, 32),
+  slopeE = newTexInfo("slopeE", 96, 16, 32, 32),
+  slopeNE = newTexInfo("slopeNE", 0, 48, 32, 32),
+  slopeN = newTexInfo("slopeN", 32, 48, 32, 32),
+  slopeNW = newTexInfo("slopeNW", 64, 48, 32, 32),
+  slopeW = newTexInfo("slopeW", 96, 48, 32, 32),
+  slopeNESW = newTexInfo("slopeNESW", 128, 48, 32, 32),
+  dipNW = newTexInfo("dipNW", 0, 80, 32, 16, -8),
+  dipSW = newTexInfo("dipSW", 32, 80, 32, 32, -8),
+  dipSE = newTexInfo("dipSE", 64, 80, 32, 32, -8),
+  dipNE = newTexInfo("dipNE", 96, 80, 32, 32, -8),
+}
+
+---Loads resources.
+function M.load()
   M.texture = love.graphics.newImage("assets/iso-tiles2.png")
   M.texture:setFilter("nearest", "nearest")
 end
 
----@param pattern number
----@return TexInfo
+---Converts a 4 bit tile height pattern to tile texture coordinates.
+---The 4 bit pattern represents the relative height of the NE,NW,SW,SE tile vertices.
+---@param pattern number 4 bit pattern
+---@return TexInfo - Tile texture coordinates
 function M.patternToTexInfo(pattern)
-  return M.atlas[M.patternToAltasName[pattern]]
+  return M.atlas[patternToAltasName[pattern]]
 end
 
 return M
