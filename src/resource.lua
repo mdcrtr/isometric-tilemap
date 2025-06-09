@@ -5,7 +5,7 @@
 ---@param w number
 ---@param h number
 ---@param oy number?
----@TexInfo
+---@return TexInfo
 local function newTexInfo(name, x, y, w, h, oy)
   return {
     name = name,
@@ -38,7 +38,7 @@ local patternToAltasName = {
 local M = {}
 
 ---Atlas of tile texture coordinates.
----@type TexInfo[]
+---@type {[string]: TexInfo}
 M.atlas = {
   empty = newTexInfo("empty", 1, 1, 0, 0),
   grass = newTexInfo("grass", 32, 0, 32, 16),
