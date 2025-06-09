@@ -6,5 +6,8 @@ C.TILE_W = 32
 C.TILE_H = 16
 C.TILE_HW = C.TILE_W / 2
 C.TILE_HH = C.TILE_H / 2
+C.PAN_SPEED = 800
+C.MIN_ZOOM = 0.25
+C.MAX_ZOOM = 16
 
 return C
