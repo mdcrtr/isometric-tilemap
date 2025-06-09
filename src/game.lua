@@ -1,39 +1,32 @@
+local C = require "constants"
+local camera = require "camera"
 local tileMap = require "tilemap"
 local tool = require "tool"
 
 local game = {}
 
-game.transform = love.math.newTransform()
-
----Converts Screen position to World position.
----@param x number Screen X position
----@param y number Screen Y position
----@return number, number - World X/Y position
-function game.screenToWorld(x, y)
-  return game.transform:inverseTransformPoint(x, y)
-end
-
 ---Loads the game.
 function game.load()
-  game.transform:translate(500, 200)
-  game.transform:scale(4)
+  camera.pan(0, 0)
+  camera.setScale(1)
   tileMap.init()
 end
 
 ---Updates the game.
 ---@param dt number Delta time
 function game.update(dt)
+  local panAmount = C.PAN_SPEED * dt
   if love.keyboard.isDown("a") then
-    game.transform:translate(4, 0)
+    camera.pan(panAmount, 0)
   end
   if love.keyboard.isDown("d") then
-    game.transform:translate(-4, 0)
+    camera.pan(-panAmount, 0)
   end
   if love.keyboard.isDown("w") then
-    game.transform:translate(0, 4)
+    camera.pan(0, panAmount)
   end
   if love.keyboard.isDown("s") then
-    game.transform:translate(0, -4)
+    camera.pan(0, -panAmount)
   end
 
   tool.update(dt)
@@ -42,7 +35,7 @@ end
 ---Draws the game.
 function game.draw()
   love.graphics.setColor(1, 1, 1)
-  love.graphics.applyTransform(game.transform)
+  camera.apply()
 
   tileMap.draw()
   tool.draw()
@@ -55,9 +48,9 @@ end
 ---@param key love.KeyConstant Key
 function game.keypressed(key)
   if key == "q" then
-    game.transform:scale(0.5)
+    camera.zoomOut()
   elseif key == "e" then
-    game.transform:scale(2)
+    camera.zoomIn()
   elseif key == "j" then
     tool.select("lower")
   elseif key == "k" then
@@ -73,7 +66,7 @@ end
 ---@param button number Button index
 function game.mousepressed(x, y, button)
   if button == 1 then
-    local worldX, worldY = game.screenToWorld(x, y)
+    local worldX, worldY = camera.screenToWorld(x, y)
     tool.mousepressed(worldX, worldY)
   end
 end
@@ -84,7 +77,7 @@ end
 ---@param button number Button index
 function game.mousereleased(x, y, button)
   if button == 1 then
-    local worldX, worldY = game.screenToWorld(x, y)
+    local worldX, worldY = camera.screenToWorld(x, y)
     tool.mousereleased(worldX, worldY)
   end
 end
@@ -93,7 +86,7 @@ end
 ---@param x number Mouse X screen position
 ---@param y number Mouse Y screen position
 function game.mousemoved(x, y)
-  local worldX, worldY = game.screenToWorld(x, y)
+  local worldX, worldY = camera.screenToWorld(x, y)
   tool.mousemoved(worldX, worldY)
 end
 

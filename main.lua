@@ -8,6 +8,7 @@ local resource = require "resource"
 
 local function hotReload()
   package.loaded.game = nil
+  package.loaded.camera = nil
   package.loaded.tilemap = nil
   package.loaded.tool = nil
   package.loaded.constants = nil

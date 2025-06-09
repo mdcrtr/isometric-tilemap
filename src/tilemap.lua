@@ -205,8 +205,8 @@ function M.snapToGridPoint(x, y, fixedHeight)
     return gridX, gridY
   end
 
-  local startX = math.floor(fx) - 1
-  local startY = math.floor(fy) - 1
+  local startX = math.floor(fx)
+  local startY = math.floor(fy)
   local closestX = startX
   local closestY = startY
   local closestDist = 999999
