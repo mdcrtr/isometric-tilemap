@@ -2,6 +2,7 @@
 if arg[#arg] == "vsc_debug" then require("lldebugger").start() end
 
 package.path = "./src/?.lua;" .. package.path
+love.filesystem.setRequirePath("src/?.lua;" .. love.filesystem.getRequirePath())
 
 local game = require "game"
 local resource = require "resource"
