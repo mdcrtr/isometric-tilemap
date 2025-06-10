@@ -16,3 +16,4 @@
 ---@class Tile
 ---@field texInfo TexInfo Texture coordinates
 ---@field hy number y offset due to terrain height
+---@field structure TexInfo Structure built on tile

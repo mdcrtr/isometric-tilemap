@@ -57,6 +57,12 @@ function game.keypressed(key)
     tool.select("raise")
   elseif key == "l" then
     tool.select("level")
+  elseif key == "t" then
+    tool.select("tree")
+  elseif key == "y" then
+    tool.select("house")
+  elseif key == "x" then
+    tool.select("remove")
   end
 end
 

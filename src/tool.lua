@@ -28,6 +28,12 @@ local function useTool()
     tileMap.lowerTerrain(toolX, toolY)
   elseif tool == "level" then
     tileMap.setTerrainHeight(toolX, toolY, refHeight)
+  elseif tool == "tree" then
+    tileMap.addStructure(toolX, toolY, "tree")
+  elseif tool == "house" then
+    tileMap.addStructure(toolX, toolY, "house")
+  elseif tool == "remove" then
+    tileMap.removeStucture(toolX, toolY)
   end
 end
 

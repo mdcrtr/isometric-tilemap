@@ -12,7 +12,8 @@ local heightMap = {} ---@type number[]
 ---@type Tile
 local dummyTile = {
   texInfo = resource.atlas["empty"],
-  hy = 0
+  hy = 0,
+  structure = resource.atlas["empty"]
 }
 
 ---@type Vec[]
@@ -47,7 +48,8 @@ end
 local function newTile(texName, height)
   return {
     texInfo = resource.atlas[texName],
-    hy = height * C.TILE_HH
+    hy = height * C.TILE_HH,
+    structure = resource.atlas["empty"]
   }
 end
 
@@ -262,6 +264,7 @@ end
 
 ---Draws the tile map
 function M.draw()
+  local texture = resource.texture
   for y = 0, C.MAP_SZ - 1 do
     for x = 0, C.MAP_SZ - 1 do
       local px, py = M.gridToWorld(x, y)
@@ -269,7 +272,12 @@ function M.draw()
       local tile = tiles[toTileMapIndex(x, y)]
       local texInfo = tile.texInfo
       py = py + texInfo.oy - tile.hy
-      love.graphics.draw(resource.texture, texInfo.quad, px, py)
+      love.graphics.draw(texture, texInfo.quad, px, py)
+      local structureInfo = tile.structure
+      if structureInfo.name ~= "empty" then
+        py = py - texInfo.oy + structureInfo.oy
+        love.graphics.draw(texture, structureInfo.quad, px, py)
+      end
     end
   end
 end
@@ -307,6 +315,23 @@ end
 function M.lowerTerrain(x, y)
   local h = M.getHeight(x, y)
   M.setTerrainHeight(x, y, h - 1)
+end
+
+---Adds a structure to the tilemap
+---@param x number Grid X coordinate
+---@param y number Grid Y coordinate
+---@param name string TexInfo name
+function M.addStructure(x, y, name)
+  if not M.validTileCoord(x, y) then return end
+  M.getTile(x, y).structure = resource.atlas[name]
+end
+
+---Removes a structure from the tilemap
+---@param x number Grid X coordinate
+---@param y number Grid Y coordinate
+function M.removeStucture(x, y)
+  if not M.validTileCoord(x, y) then return end
+  M.getTile(x, y).structure = resource.atlas["empty"]
 end
 
 return M

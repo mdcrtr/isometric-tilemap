@@ -56,6 +56,8 @@ M.atlas = {
   dipSW = newTexInfo("dipSW", 32, 80, 32, 32, -8),
   dipSE = newTexInfo("dipSE", 64, 80, 32, 32, -8),
   dipNE = newTexInfo("dipNE", 96, 80, 32, 32, -8),
+  tree = newTexInfo("tree", 128, 0, 32, 32, -16),
+  house = newTexInfo("house", 160, 0, 32, 32, -16),
 }
 
 ---Loads resources.
