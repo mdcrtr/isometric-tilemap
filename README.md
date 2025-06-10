@@ -15,14 +15,15 @@ Q, E - Zoom Out/In
 
 R - Hot reload lua code
 
-J - Select Lower Terrain tool
+J, K, L - Select Lower/Raise/Level Terrain tool
 
-K - Select Raise Terrain tool
+T, Y - Select Tree/House tool
 
-L - Select Level Terrain tool
+X - Select Remove tool
 
 Click and drag with the mouse to use the selected tool
 
 # Screenshot (Programmer art warning)
 
-![isotiles1](https://github.com/user-attachments/assets/4f319d60-c245-4556-809d-34d2c8a9e8fb)
+![iso-tiles2](https://github.com/user-attachments/assets/bf83101c-4664-4a5c-8259-9cd3f60d44ad)
+
