@@ -21,6 +21,8 @@ T, Y - Select Tree/House tool
 
 X - Select Remove tool
 
+C - Add creature
+
 Click and drag with the mouse to use the selected tool
 
 # Screenshot (Programmer art warning)
