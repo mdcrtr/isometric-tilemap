@@ -191,27 +191,33 @@ function M.worldToGrid(x, y)
   return math.floor(gx), math.floor(gy)
 end
 
+---Snaps world position to the nearest grid point, at a fixed height.
+---@param x number World X position
+---@param y number World Y position
+---@param h number Height
+---@return number, number - Snapped Grid X, Y coordinate
+function M.snapToFixedHeightGrid(x, y, h)
+  local fx, fy = M.worldToGridFloat(x, y)
+  local offset = h * 0.5
+  local gridX = math.floor(fx + 0.5 + offset)
+  local gridY = math.floor(fy + 0.5 + offset)
+  return gridX, gridY
+end
+
 ---Snaps world position to the nearest grid point, taking height into account.
 ---@param x number World X position
 ---@param y number World Y position
----@param fixedHeight number? Snap to a specific height, or snap to terrain height
----@return number, number - Snapped Grid X, Y coordinate
-function M.snapToGridPoint(x, y, fixedHeight)
+---@return number, number, number, number - Snapped Grid X, Y coordinate and Tile X, Y origin
+function M.snapToGridPoint(x, y)
   local fx, fy = M.worldToGridFloat(x, y)
-
-  -- Snap to a fixed height
-  if fixedHeight then
-    local offset = fixedHeight * 0.5
-    local gridX = math.floor(fx + 0.5 + offset)
-    local gridY = math.floor(fy + 0.5 + offset)
-    return gridX, gridY
-  end
 
   local startX = math.floor(fx)
   local startY = math.floor(fy)
   local closestX = startX
   local closestY = startY
   local closestDist = 999999
+  local closestDx = 0
+  local closestDy = 0
 
   -- Lift the grid position to its terrain height and check if it is
   -- closer to fx/fy than the previously checked point.
@@ -225,6 +231,8 @@ function M.snapToGridPoint(x, y, fixedHeight)
       closestX = gx
       closestY = gy
       closestDist = dist
+      closestDx = fx - px
+      closestDy = fy - py
     end
   end
 
@@ -238,7 +246,29 @@ function M.snapToGridPoint(x, y, fixedHeight)
     checkPoint(gx, gy + 1)
   end
 
-  return closestX, closestY
+  local tileX = 0
+  local tileY = 0
+
+  -- Find tile origin for the selected grid point
+  if closestDx < 0 then
+    if closestDy < 0 then
+      tileX = closestX - 1
+      tileY = closestY - 1
+    else
+      tileX = closestX - 1
+      tileY = closestY
+    end
+  else
+    if closestDy < 0 then
+      tileX = closestX
+      tileY = closestY - 1
+    else
+      tileX = closestX
+      tileY = closestY
+    end
+  end
+
+  return closestX, closestY, tileX, tileY
 end
 
 ---Gets a tile
