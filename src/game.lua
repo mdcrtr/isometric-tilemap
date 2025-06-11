@@ -1,5 +1,6 @@
 local C = require "constants"
 local camera = require "camera"
+local creature = require "creature"
 local tileMap = require "tilemap"
 local tool = require "tool"
 
@@ -7,7 +8,7 @@ local game = {}
 
 ---Loads the game.
 function game.load()
-  camera.pan(0, 0)
+  camera.pan(0, -200)
   camera.setScale(1)
   tileMap.init()
 end
@@ -30,6 +31,7 @@ function game.update(dt)
   end
 
   tool.update(dt)
+  creature.updateCreatures(dt)
 end
 
 ---Draws the game.
@@ -39,6 +41,7 @@ function game.draw()
 
   tileMap.draw()
   tool.draw()
+  creature.drawCreatures()
 
   love.graphics.origin()
   love.graphics.print(tool.getName(), 10, 10)
@@ -63,6 +66,8 @@ function game.keypressed(key)
     tool.select("house")
   elseif key == "x" then
     tool.select("remove")
+  elseif key == "c" then
+    tool.select("creature")
   end
 end
 

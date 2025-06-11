@@ -24,3 +24,12 @@
 ---@field name string Name of the tool
 ---@field snapMode SnapMode How the tool snaps to the grid
 ---@field use fun() Use the tool at the current tool coordinates
+
+---@class Creature
+---@field x number
+---@field y number
+---@field targetX number
+---@field targetY number
+---@field t number
+---@field name string
+---@field sprite TexInfo

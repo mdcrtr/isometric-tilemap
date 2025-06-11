@@ -58,6 +58,7 @@ M.atlas = {
   dipNE = newTexInfo("dipNE", 96, 80, 32, 32, -8),
   tree = newTexInfo("tree", 128, 0, 32, 32, -16),
   house = newTexInfo("house", 160, 0, 32, 32, -16),
+  creature = newTexInfo("creature", 192, 0, 8, 8),
 }
 
 ---Loads resources.

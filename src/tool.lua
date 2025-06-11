@@ -1,8 +1,9 @@
-local C         = require "constants"
-local tileMap   = require "tilemap"
+local C = require "constants"
+local creature = require "creature"
+local tileMap = require "tilemap"
 
-local toolX     = 0
-local toolY     = 0
+local toolX = 0
+local toolY = 0
 local mouseDown = false
 local refHeight = 0
 
@@ -71,6 +72,13 @@ local toolRegistry = {
     snapMode = "tile",
     use = function()
       tileMap.removeStucture(toolX, toolY)
+    end
+  },
+  creature = {
+    name = "creature",
+    snapMode = "tile",
+    use = function()
+      creature.addCreature(toolX, toolY)
     end
   }
 }
