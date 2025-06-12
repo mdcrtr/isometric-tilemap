@@ -1,6 +1,6 @@
 local C = require "constants"
 local camera = require "camera"
-local creature = require "creature"
+local creatures = require "creatures"
 local tileMap = require "tilemap"
 local tool = require "tool"
 
@@ -31,7 +31,7 @@ function game.update(dt)
   end
 
   tool.update(dt)
-  creature.updateCreatures(dt)
+  creatures.updateCreatures(dt)
 end
 
 ---Draws the game.
@@ -41,7 +41,7 @@ function game.draw()
 
   tileMap.draw()
   tool.draw()
-  creature.drawCreatures()
+  creatures.drawCreatures()
 
   love.graphics.origin()
   love.graphics.print(tool.getName(), 10, 10)

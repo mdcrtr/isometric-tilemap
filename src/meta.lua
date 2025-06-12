@@ -30,6 +30,5 @@
 ---@field y number
 ---@field targetX number
 ---@field targetY number
----@field t number
 ---@field name string
 ---@field sprite TexInfo

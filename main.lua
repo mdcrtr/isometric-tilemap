@@ -8,11 +8,13 @@ local game = require "game"
 local resource = require "resource"
 
 local function hotReload()
-  package.loaded.game = nil
   package.loaded.camera = nil
+  package.loaded.constants = nil
+  package.loaded.creatures = nil
+  package.loaded.game = nil
   package.loaded.tilemap = nil
   package.loaded.tool = nil
-  package.loaded.constants = nil
+  package.loaded.util = nil
   collectgarbage("collect")
   game = require "game"
   game.load()

@@ -1,5 +1,5 @@
 local C = require "constants"
-local creature = require "creature"
+local creatures = require "creatures"
 local tileMap = require "tilemap"
 
 local toolX = 0
@@ -78,7 +78,7 @@ local toolRegistry = {
     name = "creature",
     snapMode = "tile",
     use = function()
-      creature.addCreature(toolX, toolY)
+      creatures.addCreature(toolX, toolY)
     end
   }
 }
