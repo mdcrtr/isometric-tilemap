@@ -27,5 +27,4 @@ Click and drag with the mouse to use the selected tool
 
 # Screenshot (Programmer art warning)
 
-![iso-tiles2](https://github.com/user-attachments/assets/bf83101c-4664-4a5c-8259-9cd3f60d44ad)
-
+<img width="1006" height="756" alt="isotiles3" src="https://github.com/user-attachments/assets/62887252-60e0-4fc8-ab46-18b0c69ec112" />
